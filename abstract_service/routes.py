@@ -3,8 +3,9 @@ from sqlalchemy.orm import Session
 
 from abstract_service import schemas, crud
 from abstract_service.dependency import get_db
+from abstract_service.security import get_token_header
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_token_header)], )
 
 
 @router.post("/create/", response_model=schemas.Code)
