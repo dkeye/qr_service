@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
 
 from . import models
 from .database import engine
@@ -11,6 +12,7 @@ models.Base.metadata.create_all(bind=engine)
 
 def get_app():
     application = FastAPI(title='Abstract service')
+    application.add_middleware(CORSMiddleware, allow_origins=["*"])
 
     application.add_exception_handler(AppLogicException, app_logic_exception_handler)
 
