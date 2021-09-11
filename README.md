@@ -8,6 +8,8 @@ cd <PATH_TO_PROJECT>
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+cp .env.example .env
+# fill the .env
 uvicorn abstract_service.main:app --reload
 ```
 
