@@ -44,5 +44,10 @@ def switch_code(code: schemas.CodeBase, db: Session = Depends(get_db)):
 )
 def delete_code(code: schemas.CodeBase, response: Response, db: Session = Depends(get_db)):
     crud.delete_code(db, code.code)
-    response.status_code = 204
-    return
+    response.status_code = status.HTTP_204_NO_CONTENT
+
+
+@router.post("/clear_all", status_code=status.HTTP_204_NO_CONTENT)
+def clear_codes(response: Response, db: Session = Depends(get_db)):
+    crud.clear_codes(db)
+    response.status_code = status.HTTP_204_NO_CONTENT

@@ -49,3 +49,8 @@ def switch(db: Session, code: str) -> schemas.Code:
 def delete_code(db: Session, code: str) -> None:
     db_item = get_code(db, code)
     db.delete(db_item)
+
+
+def clear_codes(db: Session) -> None:
+    db.query(models.Codes).delete()
+    db.commit()
