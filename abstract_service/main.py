@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from abstract_service.api.routes import router
 from . import models
+from .api.routes import router as api_router
 from .database import engine
 from .errors import AppLogicException
 from .handlers import app_logic_exception_handler
@@ -23,7 +23,7 @@ def get_app():
 
     application.add_exception_handler(AppLogicException, app_logic_exception_handler)
 
-    application.include_router(router)
+    application.include_router(api_router)
 
     return application
 
