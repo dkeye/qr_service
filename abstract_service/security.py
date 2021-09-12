@@ -3,7 +3,7 @@ from fastapi.security import APIKeyHeader
 
 from abstract_service.settings import get_settings
 
-oauth2_scheme = APIKeyHeader(name='secret_token')
+oauth2_scheme = APIKeyHeader(name='secret-token')
 
 
 async def get_token_header(secret_token: str = Depends(oauth2_scheme)):
