@@ -15,13 +15,13 @@ def create_code(db: Session):
 
 
 def get_code(db: Session, code: str) -> models.Codes:
-    return db.query(models.Codes).filter(models.Codes.code == code).first()
+    if db_code := db.query(models.Codes).filter(models.Codes.code == code).first():
+        return db_code
+    raise DBNotFound("Code not found")
 
 
 def activate_code(db: Session, code: schemas.CodeBase) -> schemas.Code:
     db_item = get_code(db, code.code)
-    if db_item is None:
-        raise DBNotFound("Code not found")
     if db_item.is_activated:
         raise AppLogicException("Code already activated")
 
