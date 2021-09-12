@@ -1,4 +1,4 @@
-from fastapi import Depends, APIRouter
+from fastapi import Depends, APIRouter, Response, status
 from sqlalchemy.orm import Session
 
 from abstract_service import schemas, crud
@@ -8,13 +8,14 @@ from abstract_service.security import get_token_header
 router = APIRouter(
     dependencies=[Depends(get_token_header)],
     responses={
-        401: {"description": "secret_token header invalid"}
+        status.HTTP_401_UNAUTHORIZED: {"description": "secret_token header invalid"}
     }
 )
 
 
-@router.post("/create/", response_model=schemas.Code)
-def get_new_code(db: Session = Depends(get_db)):
+@router.post("/create", status_code=status.HTTP_201_CREATED, response_model=schemas.Code)
+def get_new_code(response: Response, db: Session = Depends(get_db)):
+    response.status_code = status.HTTP_201_CREATED
     return crud.create_code(db)
 
 
@@ -22,8 +23,8 @@ def get_new_code(db: Session = Depends(get_db)):
     "/check/{code}",
     response_model=schemas.Code,
     responses={
-        200: {"model": schemas.Code},
-        404: {"description": "Code not found"},
+        status.HTTP_200_OK: {"model": schemas.Code},
+        status.HTTP_404_NOT_FOUND: {"description": "Code not found"},
     }
 )
 def check_code(code: str, db: Session = Depends(get_db)):
@@ -34,9 +35,9 @@ def check_code(code: str, db: Session = Depends(get_db)):
     "/activate",
     response_model=schemas.Code,
     responses={
-        200: {"model": schemas.Code},
-        404: {"description": "Code not found"},
-        406: {"description": "Code already activated"},
+        status.HTTP_200_OK: {"model": schemas.Code},
+        status.HTTP_404_NOT_FOUND: {"description": "Code not found"},
+        status.HTTP_406_NOT_ACCEPTABLE: {"description": "Code already activated"},
     }
 )
 def activate_code(code: schemas.CodeBase, db: Session = Depends(get_db)):
