@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="https://unpkg.com/vue@next"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>Admin page for QR service</title>
+</head>
+<body>
+<div id="app">
+    <div id="codeList">
+        <h2>List of codes</h2>
+        <hr/>
+        <ul class="list" v-if="(loadedList && codeList.length !== 0)">
+            <li class="code-item" v-for="(code, idx) in codeList">
+                qr_code: {{ code.code }} is_activated: {{ code.is_activated }}
+                <button class="remove" @click="deleteCode(code.code, idx)">Delete code</button>
+                <button class="switch" @click="switchCode(code.code, idx)">Switch code</button>
+            </li>
+        </ul>
+        <div v-else-if="!loadedList">Loading...</div>
+        <div v-else-if="error">Error: {{ error }}</div>
+        <div v-else>Empty</div>
+    </div>
+</div>
+</body>
+<script>
+  Vue.createApp({
+    data: () => ({
+      codeList: [],
+      loadedList: false,
+      error: false,
+      token: '',
+    }),
+    methods: {
+      async fetchData() {
+        let response = await this.adminPost('codes')
+        this.loadedList = true;
+        if (response.ok) {
+          this.codeList = await response.json();
+        } else if (response.status !== 404) {
+          this.error = await response.json()
+        }
+      },
+      async switchCode(code, idx) {
+        let response = await this.adminPost('switch', {"code": code});
+        if (response.ok) {
+          this.codeList[idx].is_activated = await response.json().then(code => code.is_activated);
+        } else {
+          alert(`${response.status} = ${await response.text()}`);
+        }
+      },
+      async deleteCode(code, idx) {
+        let response = await this.adminPost('delete', {"code": code});
+        if (response.ok) {
+          this.codeList.splice(idx, 1)
+        } else {
+          alert(`${response.status} = ${await response.text()}`);
+        }
+      },
+      async adminPost(url, body) {
+        let data = {method: "POST", headers: {'Content-Type': 'application/json', 'secret-token': this.token}}
+        if (body) {
+          data['body'] = JSON.stringify(body);
+        }
+        return await fetch(url, data);
+      }
+    },
+    created() {
+      this.fetchData()
+    },
+  }).mount('#app')
+
+</script>
+</html>
