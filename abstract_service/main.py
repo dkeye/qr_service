@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from . import models
-from .api.admin_routes import router as admin_router
+from abstract_service.api.admin.admin_routes import router as admin_router
 from .api.routes import router as api_router
 from .database import engine
 from .errors import AppLogicException

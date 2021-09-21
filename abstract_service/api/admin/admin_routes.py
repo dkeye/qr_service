@@ -1,6 +1,7 @@
 from typing import List
 
-from fastapi import Depends, APIRouter, Response, status
+from fastapi import Depends, APIRouter, Response, status, Request
+from fastapi.responses import HTMLResponse, FileResponse
 from sqlalchemy.orm import Session
 
 from abstract_service import schemas, crud
@@ -9,11 +10,16 @@ from abstract_service.security import get_token_header
 
 router = APIRouter(
     prefix='/admin',
-    dependencies=[Depends(get_token_header)],
+    # dependencies=[Depends(get_token_header)], TODO: basic auth?
     responses={
         status.HTTP_401_UNAUTHORIZED: {"description": "secret_token header invalid"}
     }
 )
+
+
+@router.get("/", response_class=HTMLResponse)
+async def admin_page(request: Request):
+    return FileResponse("abstract_service/templates/admin.html")
 
 
 @router.post("/codes", response_model=List[schemas.Code])
